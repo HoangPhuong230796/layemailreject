@@ -170,10 +170,11 @@ function submitReason() {
         if (!response.ok) throw new Error("Lỗi API: " + response.status);
         return response.json();
     })
-    .then(result => {
-        console.log("Success:", result);
-        alert("Gửi thành công!"); // Hiển thị thông báo thành công
-    })
+.then(response => response.json())  
+.then(result => {
+    console.log("Success:", result);
+    alert("Gửi thành công! Dữ liệu phản hồi: " + JSON.stringify(result));
+})
     .catch(error => {
         console.error("Error:", error);
         alert("Gửi thất bại: " + error.message); // Hiển thị lỗi nếu có
