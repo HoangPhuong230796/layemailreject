@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kiểm tra quyền truy cập</title>
+    <script src="https://alcdn.msauth.net/browser/2.22.1/js/msal-browser.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: #f4f7f6;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        h2 {
+            color: #333;
+        }
+        .loading {
+            margin: 20px 0;
+            font-size: 16px;
+            color: #666;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Đang xác thực...</h2>
+        <div class="loader"></div>
+        <p class="loading">Vui lòng đợi trong giây lát...</p>
+        <p id="status"></p>
+    </div>
+
+    <script>
+        const ALLOWED_EMAILS = [
+        "phuonghv@phumytpc.genco3.vn",
+        "camnc@phumytpc.genco3.vn",
+        "trunglv@phumytpc.genco3.vn"];// Email được phép truy cập
+
+        const msalConfig = {
+            auth: {
+                clientId: "836c9365-9ad7-454a-beb8-0970f8a6f2e8",
+                authority: "https://login.microsoftonline.com/f2c948a0-a9c9-4e40-bf86-bf3a03590b44",
+                redirectUri: "https://hoangphuong230796.github.io/layemailtudong/"
+            }
+        };
+
+        const msalInstance = new msal.PublicClientApplication(msalConfig);
+
+        async function getUserEmail() {
+            try {
+                const response = await msalInstance.handleRedirectPromise();
+                let account = msalInstance.getAllAccounts()[0];
+
+                if (!account) {
+                    await msalInstance.loginRedirect({ scopes: ["User.Read"] });
+                    return;
+                }
+
+                const tokenResponse = await msalInstance.acquireTokenSilent({
+                    scopes: ["User.Read"],
+                    account: account
+                });
+
+                const accessToken = tokenResponse.accessToken;
+
+                const userResponse = await fetch("https://graph.microsoft.com/v1.0/me", {
+                    headers: { "Authorization": `Bearer ${accessToken}` }
+                });
+
+                const userData = await userResponse.json();
+                const userEmail = userData.mail || userData.userPrincipalName;
+                console.log("User email retrieved:", userEmail); // Thêm dòng này để kiểm tra email nhận được
+
+                // Kiểm tra quyền truy cập
+                if (!ALLOWED_EMAILS.includes(userEmail.trim().toLowerCase())) {
+                    document.querySelector("h2").innerText = "Truy cập bị từ chối!";
+                    document.querySelector(".loading").innerText = `Email của bạn: ${userEmail}`;
+                    document.querySelector(".loader").style.display = "none";
+                    document.getElementById("status").innerHTML = `<p class="error">Bạn không có quyền truy cập. Vui lòng liên hệ Admin.</p>`;
+                    return;
+                }
+
+                // Nếu email hợp lệ
+                document.querySelector("h2").innerText = "Thành công!";
+                document.querySelector(".loading").innerText = `Email: ${userEmail}`;
+                document.querySelector(".loader").style.display = "none";
+                document.getElementById("status").innerHTML = `<p class="success">Cảm ơn! Phản hồi của bạn đã được ghi nhận.</p>`;
+
+                sendToFlow2(userEmail);
+            } catch (error) {
+                document.querySelector("h2").innerText = "Lỗi!";
+                document.querySelector(".loading").innerText = "";
+                document.querySelector(".loader").style.display = "none";
+                document.getElementById("status").innerHTML = `<p class="error">Không thể lấy email. Vui lòng thử lại.</p>`;
+                console.error("Lỗi lấy email:", error);
+            }
+        }
+
+        function sendToFlow2(email) {
+            fetch("https://prod-59.southeastasia.logic.azure.com:443/workflows/7639bfd4cf064ce39218172007eff233/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=K4m0Tvxji9EFHLWLjy_pP6HcNRem9_YdLP73JZEshz0", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: email,response:"reject" })
+            })
+            .then(async res => {
+                const data = await res.text();
+                console.log("Response from Flow 2:", data);
+            })
+            .catch(error => console.error("Lỗi gửi dữ liệu:", error));
+        }
+
+        getUserEmail();
+    </script>
+
+</body>
+</html>
