@@ -166,12 +166,18 @@ function submitReason() {
             reason: reason
         })
     })
-    .then(response => response.json())
-    .then(data => {
-        alert("Lý do từ chối đã được gửi.");
-        console.log("Response from Flow:", data);
+.then(response => {
+        if (!response.ok) throw new Error("Lỗi API: " + response.status);
+        return response.json();
     })
-    .catch(error => console.error("Error:", error));
+    .then(result => {
+        console.log("Success:", result);
+        alert("Gửi thành công!"); // Hiển thị thông báo thành công
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        alert("Gửi thất bại: " + error.message); // Hiển thị lỗi nếu có
+    });
 }
 
 getUserEmail();
