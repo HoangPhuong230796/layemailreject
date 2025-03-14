@@ -36,6 +36,7 @@
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
+            font-family: Arial, sans-serif; /* Thay đổi kiểu chữ */
             resize: none;
         }
         .submit-btn, .reject-btn {
@@ -131,11 +132,9 @@ async function getUserEmail() {
         }
 
         // Nếu email hợp lệ, hiển thị ô nhập lý do
-        document.querySelector("h2").innerText = "Thành công!";
+        document.querySelector("h2").innerText = "Vui lòng nhập lý do không thống nhất!";
         document.querySelector(".loading").innerText = `Email: ${userEmail}`;
         document.querySelector(".loader").style.display = "none";
-        document.getElementById("status").innerHTML = `<p class="success">Vui lòng nhập lý do nếu không thống nhất.</p>`;
-
         document.getElementById("reasonSection").classList.remove("hidden");
 
     } catch (error) {
