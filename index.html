@@ -180,10 +180,12 @@ function submitReason() {
     .then(result => {
         console.log("Success:", result);
         alert("Gửi thành công! Dữ liệu phản hồi: " + JSON.stringify(result));
+        window.close(); // Đóng tab sau khi nhấn OK
     })
     .catch(error => {
         console.error("Lỗi:", error);
         alert("Gửi thất bại! " + error.message);
+        window.close(); // Đóng tab sau khi nhấn OK
     });
 }
 
