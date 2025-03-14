@@ -132,7 +132,7 @@ async function getUserEmail() {
         }
 
         // Nếu email hợp lệ, hiển thị ô nhập lý do
-        document.querySelector("h2").innerText = "Vui lòng nhập lý do không thống nhất!";
+        document.querySelector("h2").innerText = "Vui lòng nhập lý do!";
         document.querySelector(".loading").innerText = `Email: ${userEmail}`;
         document.querySelector(".loader").style.display = "none";
         document.getElementById("reasonSection").classList.remove("hidden");
