@@ -90,7 +90,7 @@ const msalConfig = {
     auth: {
         clientId: "836c9365-9ad7-454a-beb8-0970f8a6f2e8",
         authority: "https://login.microsoftonline.com/f2c948a0-a9c9-4e40-bf86-bf3a03590b44",
-        redirectUri: "https://hoangphuong230796.github.io/layemailtudong/"
+        redirectUri: "https://hoangphuong230796.github.io/layemailreject/"
     }
 };
 
@@ -154,7 +154,7 @@ function submitReason() {
         return;
     }
 
-    fetch("https://prod-59.southeastasia.logic.azure.com:443/workflows/7639bfd4cf064ce39218172007eff233/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=K4m0Tvxji9EFHLWLjy_pP6HcNRem9_YdLP73JZEshz0", {
+    fetch("https://prod-09.southeastasia.logic.azure.com:443/workflows/d0b6dcf4b2ef4a77ac9b33f67b0ba7c3/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=bjccZy1NRhrNH0wKW_GE3bV7wZcl5mcWxZwi_lx91M8", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
